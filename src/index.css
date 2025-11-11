@@ -60,7 +60,7 @@ body {
 }
 
 section {
-  overflow-y: scroll;
+  overflow-y: auto;
   padding-bottom: 40px;
 }
 
