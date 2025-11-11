@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { CATEGORIES } from '../data/category-color';
 import { supabase } from '../lib/supabase';
 
@@ -11,8 +12,10 @@ const FactItem = ({
   votesFalse,
   fetchData,
 }) => {
+  const [isUpdate, setIsUpdate] = useState(false);
   const updateVote = async (vote, score, id) => {
     try {
+      setIsUpdate(true);
       const { error } = await supabase
         .from('facts')
         .update({ [vote]: score + 1 })
@@ -20,6 +23,7 @@ const FactItem = ({
       if (error) throw error;
 
       fetchData();
+      setIsUpdate(false);
     } catch (error) {
       console.error(error);
     }
@@ -46,15 +50,20 @@ const FactItem = ({
       <div className="vote-buttons">
         <button
           onClick={() => updateVote('votesInteresting', votesInteresting, id)}
+          disabled={isUpdate}
         >
           👍 {votesInteresting}
         </button>
         <button
           onClick={() => updateVote('votesMindblowing', votesMindblowing, id)}
+          disabled={isUpdate}
         >
           🤯 {votesMindblowing}
         </button>
-        <button onClick={() => updateVote('votesFalse', votesFalse, id)}>
+        <button
+          onClick={() => updateVote('votesFalse', votesFalse, id)}
+          disabled={isUpdate}
+        >
           ⛔️ {votesFalse}
         </button>
       </div>
