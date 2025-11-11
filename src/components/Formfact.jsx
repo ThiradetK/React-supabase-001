@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { CATEGORIES } from '../data/category-color';
 import { supabase } from '../lib/supabase';
 
 const Formfact = ({ isOpen, fetchData, setIsOpenForm }) => {
+  const [isUpLoading, setIsUpLoading] = useState(false);
+
   const isValidHttpUrl = (str) => {
     let url;
     try {
@@ -24,7 +27,7 @@ const Formfact = ({ isOpen, fetchData, setIsOpenForm }) => {
 
   const submitHandle = async (e) => {
     e.preventDefault();
-
+    setIsUpLoading(true);
     try {
       const form = e.target;
       const formData = new FormData(form);
@@ -44,43 +47,39 @@ const Formfact = ({ isOpen, fetchData, setIsOpenForm }) => {
 
       await form.reset();
 
-      await setIsOpenForm(false);
+      setIsOpenForm(false);
 
       await fetchData();
     } catch (error) {
       console.error(error);
       alert(error);
     }
+    setIsUpLoading(false);
   };
 
   return (
-    <>
-      {isOpen && (
-        <form className="fact-form" onSubmit={submitHandle}>
-          <input
-            type="text"
-            placeholder="Share a fact with the world..."
-            name="text"
-          />
-          <input
-            type="text"
-            placeholder="Trustworthy source..."
-            name="soucre"
-          />
-          <select name="category">
-            <option value="">Choose category:</option>
-            {CATEGORIES.map((c) => (
-              <option key={c.name} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <button className="btn btn-large" type="submit">
-            Post
-          </button>
-        </form>
-      )}
-    </>
+    <form
+      className={`fact-form ${!isOpen ? 'hidden' : ''}`}
+      onSubmit={submitHandle}
+    >
+      <input
+        type="text"
+        placeholder="Share a fact with the world..."
+        name="text"
+      />
+      <input type="text" placeholder="Trustworthy source..." name="soucre" />
+      <select name="category">
+        <option value="">Choose category:</option>
+        {CATEGORIES.map((c) => (
+          <option key={c.name} value={c.name}>
+            {c.name}
+          </option>
+        ))}
+      </select>
+      <button className="btn btn-large" type="submit" disabled={isUpLoading}>
+        Post
+      </button>
+    </form>
   );
 };
 
